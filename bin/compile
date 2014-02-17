@@ -6,6 +6,11 @@ set -eo pipefail
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
 cache=$(cd "$2/" && pwd)
+
+GOVERSION="1.2"
+GOFILE="go${GOVERSION}.linux-amd64.tar.gz"
+GOURL="http://www.golangtc.com/static/go/$GOFILE"
+
 ver=${GOVERSION:-1.2}
 file=${GOFILE:-go$ver.$(uname|tr A-Z a-z)-amd64.tar.gz}
 url=${GOURL:-http://go.googlecode.com/files/$file}
@@ -18,8 +23,7 @@ virtualenv() {
 
 if ! test -f $build/.godir
 then
-    echo >&2 " !     A .godir is required. For instructions visit"
-    echo >&2 " !     https://github.com/michaljemala/cloudfoundry-buildpack-go"
+    echo >&2 " !     A .godir is required."
     exit 1
 fi
 
@@ -101,7 +105,7 @@ mkdir -p $p
 cp -R $build/* $p
 
 PATH=$GOROOT/bin:$PATH
-
+unset GOBIN
 unset GIT_DIR # unset git dir or it will mess with goinstall
 echo -n "-----> Running 'go get -tags cf ./...'..."
 ts=`date +%s`
